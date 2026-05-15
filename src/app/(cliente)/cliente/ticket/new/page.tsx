@@ -28,26 +28,38 @@ export default function NuevoTicket() {
   const [chatMessages, setChatMessages] = useState<{ role: string; content: string }[]>([
     {
       role: "assistant",
-      content: "Hola, voy a ayudarte a resolver el problema con tu equipo. Cuéntame más detalles sobre lo que está sucediendo.",
+      content: "Hola, soy el asistente técnico especialista. Cuéntame más detalles sobre lo que está sucediendo con tu equipo.",
     },
   ]);
   const [chatInput, setChatInput] = useState("");
+  const [chatLoading, setChatLoading] = useState(false);
 
   const selectedEquipo = equiposList.find((e) => e.id === equipoId);
 
-  const handleChatSend = () => {
-    if (!chatInput.trim()) return;
-    setChatMessages((prev) => [...prev, { role: "user", content: chatInput }]);
+  const handleChatSend = async () => {
+    if (!chatInput.trim() || chatLoading) return;
+    const userText = chatInput;
+    setChatMessages((prev) => [...prev, { role: "user", content: userText }]);
     setChatInput("");
-    setTimeout(() => {
-      setChatMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: "Gracias por los detalles. Intenta lo siguiente:\n1. Verifica que el cable USB esté bien conectado\n2. Reinicia el equipo por completo\n3. Si el problema persiste, avísame",
-        },
-      ]);
-    }, 1000);
+    setChatLoading(true);
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [...chatMessages, { role: "user", content: userText }].slice(1),
+          equipo: selectedEquipo?.nombre || "",
+          marca: selectedEquipo?.nombre?.match(/\((.*?)\)/)?.[1] || "",
+          problema: descripcion,
+        }),
+      });
+      const data = await res.json();
+      setChatMessages((prev) => [...prev, { role: "assistant", content: data.reply || "¿Puedes darme más detalles?" }]);
+    } catch {
+      setChatMessages((prev) => [...prev, { role: "assistant", content: "Error de conexión. Intenta de nuevo." }]);
+    } finally {
+      setChatLoading(false);
+    }
   };
 
   const handleCrearTicket = async () => {
@@ -158,10 +170,15 @@ export default function NuevoTicket() {
                 </div>
               </div>
             ))}
+            {chatLoading && (
+              <div className="flex justify-start">
+                <div className="rounded-lg bg-white px-4 py-2 text-sm text-gray-400 shadow-sm">Analizando...</div>
+              </div>
+            )}
           </div>
           <div className="flex gap-2">
-            <input value={chatInput} onChange={(e) => setChatInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") handleChatSend(); }} placeholder="Escribe tu respuesta..." className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500" />
-            <Button onClick={handleChatSend}>Enviar</Button>
+            <input value={chatInput} onChange={(e) => setChatInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") handleChatSend(); }} placeholder="Escribe tu respuesta..." className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500" disabled={chatLoading} />
+            <Button onClick={handleChatSend} disabled={chatLoading || !chatInput.trim()}>Enviar</Button>
           </div>
           <div className="mt-4 flex justify-between">
             <Button variant="secondary" onClick={() => setStep(2)}>← Atrás</Button>
