@@ -1,16 +1,13 @@
 import Card from "@/components/ui/Card";
 import Badge from "@/components/ui/Badge";
 import Link from "next/link";
-
-const equipos = [
-  { nombre: "Scanner TRIOS 5", marca: "3Shape", estado: "Activo", ultimoTicket: "Hace 3 días" },
-  { nombre: "Impresora SprintRay Pro 95", marca: "SprintRay", estado: "En servicio", ultimoTicket: "Abierto" },
-  { nombre: "Fresadora VHF K5", marca: "VHF", estado: "Activo", ultimoTicket: "Hace 1 mes" },
-  { nombre: "Equipo Profeta X1", marca: "Profeta", estado: "Activo", ultimoTicket: "Hace 2 semanas" },
-];
+import { getEquipos, getTickets, getClienteStats } from "@/lib/data";
 
 export default function ClienteDashboard() {
-  const equiposActivos = equipos.filter((e) => e.estado === "Activo").length;
+  const equipos = getEquipos("cliente-1");
+  const stats = getClienteStats("cliente-1");
+  const ticketsAbiertos = getTickets().filter(t => t.cliente_id === "cliente-1" && t.estado !== "finalizado");
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
@@ -29,19 +26,19 @@ export default function ClienteDashboard() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <p className="text-sm text-gray-500">Equipos Activos</p>
-          <p className="mt-1 text-3xl font-bold text-gray-900">{equiposActivos}</p>
+          <p className="mt-1 text-3xl font-bold text-gray-900">{stats.equiposActivos}</p>
         </Card>
         <Card>
           <p className="text-sm text-gray-500">Tickets Abiertos</p>
-          <p className="mt-1 text-3xl font-bold text-yellow-600">2</p>
+          <p className="mt-1 text-3xl font-bold text-yellow-600">{stats.ticketsAbiertos}</p>
         </Card>
         <Card>
           <p className="text-sm text-gray-500">Tickets Resueltos</p>
-          <p className="mt-1 text-3xl font-bold text-green-600">8</p>
+          <p className="mt-1 text-3xl font-bold text-green-600">{stats.ticketsResueltos}</p>
         </Card>
         <Card>
-          <p className="text-sm text-gray-500">Último Mantenimiento</p>
-          <p className="mt-1 text-3xl font-bold text-gray-900">15d</p>
+          <p className="text-sm text-gray-500">Equipos Registrados</p>
+          <p className="mt-1 text-3xl font-bold text-gray-900">{equipos.length}</p>
         </Card>
       </div>
 
@@ -59,22 +56,42 @@ export default function ClienteDashboard() {
                 <th className="px-4 py-3">Equipo</th>
                 <th className="px-4 py-3">Marca</th>
                 <th className="px-4 py-3">Estado</th>
-                <th className="px-4 py-3">Último ticket</th>
+                <th className="px-4 py-3">Modelo</th>
               </tr>
             </thead>
             <tbody>
               {equipos.map((eq) => (
-                <tr key={eq.nombre} className="border-b border-gray-100 transition hover:bg-gray-50">
+                <tr key={eq.id} className="border-b border-gray-100 transition hover:bg-gray-50">
                   <td className="px-4 py-3 text-sm font-medium text-gray-900">{eq.nombre}</td>
                   <td className="px-4 py-3 text-sm text-gray-600">{eq.marca}</td>
                   <td className="px-4 py-3"><Badge label={eq.estado} /></td>
-                  <td className="px-4 py-3 text-sm text-gray-500">{eq.ultimoTicket}</td>
+                  <td className="px-4 py-3 text-sm text-gray-500">{eq.modelo}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       </Card>
+
+      {ticketsAbiertos.length > 0 && (
+        <Card>
+          <h2 className="mb-4 text-lg font-semibold text-gray-900">Tus tickets activos</h2>
+          <div className="space-y-3">
+            {ticketsAbiertos.map((t) => (
+              <Link key={t.id} href={"/cliente/ticket/" + t.id} className="flex items-center justify-between rounded-lg border border-gray-100 p-3 transition hover:bg-gray-50">
+                <div>
+                  <p className="text-sm font-medium text-gray-900">{t.id} — {t.titulo}</p>
+                  <p className="text-xs text-gray-500">{t.created_at}</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge label={t.prioridad} />
+                  <Badge label={t.estado} />
+                </div>
+              </Link>
+            ))}
+          </div>
+        </Card>
+      )}
     </div>
   );
 }
