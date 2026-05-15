@@ -26,7 +26,7 @@ export default function Navbar({ role = "cliente" }: { role?: "cliente" | "ingen
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-8">
           <Link href={isCliente ? "/cliente/dashboard" : "/ingeniero/dashboard"} className="flex items-center gap-2">
-            <img src="/logo-white.svg" alt="DMI Portal" className="h-8 w-auto" />
+            <img src="/logo.jpg" alt="DMI Portal" className="h-8 w-auto" />
           </Link>
           <div className="hidden items-center gap-1 sm:flex">
             {links.map((link) => (
