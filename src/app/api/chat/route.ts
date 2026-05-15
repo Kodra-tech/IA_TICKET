@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "grok-4.20-reasoning",
+        model: "grok-2",
         messages: [
           { role: "system", content: systemPrompt },
           ...messages,

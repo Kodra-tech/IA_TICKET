@@ -20,8 +20,8 @@ export default function Sidebar() {
   return (
     <aside className="hidden w-64 shrink-0 border-r border-gray-200 bg-white lg:block">
       <div className="flex h-16 items-center gap-2 border-b border-gray-200 px-6">
-        <span className="text-xl">🦷</span>
-        <span className="text-lg font-bold text-gray-900">DentisPortal</span>
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-600 text-sm font-bold text-white">D</div>
+        <span className="text-lg font-bold text-gray-900">DMI Portal</span>
       </div>
       <nav className="p-4">
         {links.map((group) => (

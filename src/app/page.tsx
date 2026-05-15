@@ -1,16 +1,16 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Home() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-cyan-600 to-cyan-800">
       <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl">
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-cyan-100 text-3xl">
-            🦷
+          <div className="mx-auto mb-4 flex items-center justify-center">
+            <Image src="/logo.svg" alt="DMI Portal" width={160} height={40} priority />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">DentisPortal</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Soporte ténico para equipos dentales
+          <p className="mt-2 text-sm text-gray-500">
+            Soporte técnico para equipos dentales
           </p>
         </div>
 

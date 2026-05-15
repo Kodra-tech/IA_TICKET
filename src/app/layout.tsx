@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "DentisPortal - Soporte Técnico Dental",
-  description: "Portal de soporte técnico para equipos dentales 3Shape, SprintRay, VHF y Profeta",
+  title: "DMI Portal - Soporte Técnico Dental",
+  description: "DMI Portal - Soporte técnico para equipos dentales 3Shape, SprintRay, VHF y Profeta",
   icons: {
-    icon: "/favicon.ico",
+    icon: "/icon.svg",
   },
 };
 
