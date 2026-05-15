@@ -80,14 +80,7 @@ export async function POST(req: NextRequest) {
 
     const systemPrompt = buildSystemPrompt(equipo, marca, problema);
 
-    const historial = messages.map((m: { role: string; content: string }) => {
-      const label = m.role === "user" ? "Usuario" : "Asistente";
-      return label + ": " + m.content;
-    }).join("\n\n");
-
-    const inputCompleto = "Sistema: " + systemPrompt + "\n\n" + historial + "\n\nAsistente:";
-
-    const xaiResponse = await fetch("https://api.x.ai/v1/responses", {
+    const xaiResponse = await fetch("https://api.x.ai/v1/chat/completions", {
       method: "POST",
       headers: {
         Authorization: "Bearer " + process.env.XAI_API_KEY,
@@ -95,7 +88,10 @@ export async function POST(req: NextRequest) {
       },
       body: JSON.stringify({
         model: "grok-4.20-reasoning",
-        input: inputCompleto,
+        messages: [
+          { role: "system", content: systemPrompt },
+          ...messages,
+        ],
         temperature: 0.3,
         max_tokens: 2048,
       }),
@@ -109,21 +105,8 @@ export async function POST(req: NextRequest) {
     const data = await xaiResponse.json();
 
     let reply = "";
-    if (data.output && Array.isArray(data.output)) {
-      for (const item of data.output) {
-        if (item.content && Array.isArray(item.content)) {
-          for (const block of item.content) {
-            if (block.text) reply += block.text;
-          }
-        }
-        if (item.type === "message" && item.content?.[0]?.text) {
-          reply = item.content[0].text;
-        }
-      }
-    }
-
-    if (!reply && data.output?.[0]?.content?.[0]?.text) {
-      reply = data.output[0].content[0].text;
+    if (data.choices?.[0]?.message?.content) {
+      reply = data.choices[0].message.content;
     }
 
     if (!reply) {
