@@ -80,33 +80,39 @@ export async function POST(req: NextRequest) {
 
     const systemPrompt = buildSystemPrompt(equipo, marca, problema);
 
-    const xaiResponse = await fetch("https://api.x.ai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: "Bearer " + process.env.XAI_API_KEY,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "grok-2",
-        messages: [
-          { role: "system", content: systemPrompt },
-          ...messages,
-        ],
-        temperature: 0.3,
-        max_tokens: 2048,
-      }),
-    });
+    const contents = messages.map((m: { role: string; content: string }) => ({
+      role: m.role === "assistant" ? "model" : "user",
+      parts: [{ text: m.content }],
+    }));
 
-    if (!xaiResponse.ok) {
-      const errorText = await xaiResponse.text();
-      return NextResponse.json({ error: "Error en xAI API", details: errorText }, { status: 502 });
+    const geminiResponse = await fetch(
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + process.env.GEMINI_API_KEY,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: contents,
+          systemInstruction: {
+            parts: [{ text: systemPrompt }],
+          },
+          generationConfig: {
+            temperature: 0.3,
+            maxOutputTokens: 2048,
+          },
+        }),
+      }
+    );
+
+    if (!geminiResponse.ok) {
+      const errorText = await geminiResponse.text();
+      return NextResponse.json({ error: "Error en Gemini API", details: errorText }, { status: 502 });
     }
 
-    const data = await xaiResponse.json();
+    const data = await geminiResponse.json();
 
     let reply = "";
-    if (data.choices?.[0]?.message?.content) {
-      reply = data.choices[0].message.content;
+    if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
+      reply = data.candidates[0].content.parts[0].text;
     }
 
     if (!reply) {
