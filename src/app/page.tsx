@@ -5,12 +5,12 @@ export default function Home() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-cyan-600 to-cyan-800">
       <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl">
-        <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex items-center justify-center">
-            <Image src="/logo.svg" alt="DMI Portal" width={160} height={40} priority />
+        <div className="mb-6 text-center">
+          <div className="mx-auto mb-6 flex items-center justify-center">
+            <Image src="/logo.jpg" alt="DMI Portal" width={280} height={70} priority className="rounded-lg" />
           </div>
-          <p className="mt-2 text-sm text-gray-500">
-            Soporte técnico para equipos dentales
+          <p className="text-sm text-gray-500">
+            Soporte técnico especializado para equipos dentales
           </p>
         </div>
 
