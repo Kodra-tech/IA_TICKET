@@ -7,7 +7,7 @@ export default function Home() {
       <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl">
         <div className="mb-6 text-center">
           <div className="mx-auto mb-6 flex items-center justify-center">
-            <Image src="/logo.jpg" alt="DMI Portal" width={280} height={70} priority className="rounded-lg" />
+            <Image src="/logo.svg" alt="DMI Portal" width={280} height={80} priority />
           </div>
           <p className="text-sm text-gray-500">
             Soporte técnico especializado para equipos dentales
