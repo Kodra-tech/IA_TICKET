@@ -4,6 +4,9 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "DentisPortal - Soporte Técnico Dental",
   description: "Portal de soporte técnico para equipos dentales 3Shape, SprintRay, VHF y Profeta",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
